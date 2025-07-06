@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
@@ -48,14 +47,10 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { email: loginUserDto.email },
     });
-    if (!user) {
-      throw new NotFoundException('Email or password is incorrect');
-    }
-    const comparedPassword = await BcryptHelper.compare(
-      loginUserDto.password,
-      user.password,
-    );
-    if (!comparedPassword) {
+    if (
+      !user ||
+      !(await BcryptHelper.compare(loginUserDto.password, user.password))
+    ) {
       throw new BadRequestException('Email or password is incorrect');
     }
     const accessToken = await this.tokenService.generateAccessToken({

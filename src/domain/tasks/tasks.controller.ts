@@ -32,6 +32,8 @@ import { storageConfig } from 'src/config/storage.confis';
 import { imageFileFilter } from 'src/common/filters/image-file.filter';
 import { Request } from 'express';
 import { PaginatedTasks } from 'src/common/interfaces/pagination-task.interface';
+import { TaskResponseDto } from 'src/domain/tasks/dtos/task-response.dto';
+import { PaginatedTasksDto } from 'src/domain/tasks/dtos/paginated-task-response.dto';
 
 @ApiTags('tasks')
 @Controller('tasks')
@@ -42,21 +44,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Create a new task' })
   @ApiCreatedResponse({
     description: 'Create task is successfully',
-    schema: {
-      example: {
-        statusCode: 201,
-        message: 'success',
-        data: {
-          id: '4d7e0523-bd90-4e35-9b5d-85f621291416',
-          title: 'Task 1',
-          description: 'description task 1',
-          status: 'PENDING',
-          priority: 1,
-          createdAt: '2025-07-03T04:52:54.558Z',
-          updatedAt: '2025-07-03T04:52:54.558Z',
-        },
-      },
-    },
+    type: TaskResponseDto,
   })
   @ApiBadRequestResponse({
     description: 'Invalid input or task is exist',
@@ -71,21 +59,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Get task by id' })
   @ApiCreatedResponse({
     description: 'Get task by id',
-    schema: {
-      example: {
-        statusCode: 200,
-        message: 'success',
-        data: {
-          id: '4d7e0523-bd90-4e35-9b5d-85f621291416',
-          title: 'Task 1',
-          description: 'description task 1',
-          status: 'PENDING',
-          priority: 1,
-          createdAt: '2025-07-03T04:52:54.558Z',
-          updatedAt: '2025-07-03T04:52:54.558Z',
-        },
-      },
-    },
+    type: TaskResponseDto,
   })
   @ApiBadRequestResponse({
     description: 'Task is not found',
@@ -100,23 +74,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Get tasks' })
   @ApiCreatedResponse({
     description: 'Get tasks',
-    schema: {
-      example: {
-        statusCode: 200,
-        message: 'success',
-        data: [
-          {
-            id: '4d7e0523-bd90-4e35-9b5d-85f621291416',
-            title: 'Task 1',
-            description: 'description task 1',
-            status: 'PENDING',
-            priority: 1,
-            createdAt: '2025-07-03T04:52:54.558Z',
-            updatedAt: '2025-07-03T04:52:54.558Z',
-          },
-        ],
-      },
-    },
+    type: PaginatedTasksDto,
   })
   @Get('/')
   async getTasks(@Query() query: GetTasksQueryDto): Promise<PaginatedTasks> {
@@ -127,23 +85,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Upload file for task' })
   @ApiCreatedResponse({
     description: 'Upload file for task is successfully',
-    schema: {
-      example: {
-        statusCode: 200,
-        message: 'success',
-        data: {
-          id: '4d7e0523-bd90-4e35-9b5d-85f621291416',
-          title: 'Task 1',
-          description: 'description task 1',
-          status: 'PENDING',
-          priority: 1,
-          image:
-            'uploads/file/1751533908965-Image_created_with_a_mobile_phone.png',
-          createdAt: '2025-07-03T04:52:54.558Z',
-          updatedAt: '2025-07-03T04:52:54.558Z',
-        },
-      },
-    },
+    type: TaskResponseDto,
   })
   @ApiBadRequestResponse({
     description: 'Invalid input or task is exist',
@@ -161,7 +103,7 @@ export class TasksController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
-  ) {
+  ): Promise<Task> {
     if (!file) {
       throw new BadRequestException(req.fileValidationError);
     }
