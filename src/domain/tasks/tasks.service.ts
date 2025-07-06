@@ -64,7 +64,7 @@ export class TasksService {
     return result;
   }
 
-  async uploadTaskImage(image: string, id: string) {
+  async uploadTaskImage(image: string, id: string): Promise<Task> {
     await this.taskRepository.update(id, { image });
 
     return this.taskRepository.findOneOrFail({ where: { id } });
