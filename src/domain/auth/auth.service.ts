@@ -53,14 +53,12 @@ export class AuthService {
     ) {
       throw new BadRequestException('Email or password is incorrect');
     }
-    const accessToken = await this.tokenService.generateAccessToken({
-      id: user.id,
-      email: user.email,
-    });
-    const refreshToken = await this.tokenService.generateRefreshToken({
-      id: user.id,
-      email: user.email,
-    });
+    const { accessToken, refreshToken } = await this.tokenService.generateToken(
+      {
+        id: user.id,
+        email: user.email,
+      },
+    );
     user.refreshToken = refreshToken;
     await this.userRepository.save(user);
 
