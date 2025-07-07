@@ -9,20 +9,28 @@ export class TokenService {
     private readonly configService: ConfigService,
   ) {}
 
-  async generateAccessToken(payload: {
+  async generateToken(payload: {
     id: string;
     email: string;
-  }): Promise<string> {
-    return this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRES_IN'),
-    });
+  }): Promise<{ accessToken: string; refreshToken: string }> {
+    const accessToken = await this._generateToken(
+      payload,
+      'JWT_ACCESS_TOKEN_EXPIRES_IN',
+    );
+    const refreshToken = await this._generateToken(
+      payload,
+      'JWT_REFRESH_TOKEN_EXPIRES_IN',
+    );
+    return { accessToken, refreshToken };
   }
 
-  async generateRefreshToken(payload: { id: string; email: string }) {
+  private async _generateToken(
+    payload: { id: string; email: string },
+    expiresInKey: string,
+  ): Promise<string> {
     return this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN'),
+      expiresIn: this.configService.get<string>(expiresInKey),
     });
   }
 }

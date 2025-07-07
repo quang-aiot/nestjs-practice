@@ -28,7 +28,7 @@ import { Task } from './entities/task.entity';
 import { GetTasksQueryDto } from './dtos/get-tasks-query.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { storageConfig } from 'src/config/storage.confis';
+import { storageConfig } from 'src/config/storage.config';
 import { imageFileFilter } from 'src/common/filters/image-file.filter';
 import { Request } from 'express';
 import { PaginatedTasks } from 'src/common/interfaces/pagination-task.interface';
@@ -107,9 +107,6 @@ export class TasksController {
     if (!file) {
       throw new BadRequestException(req.fileValidationError);
     }
-    return this.taskService.uploadTaskImage(
-      file.destination + '/' + file.filename,
-      id,
-    );
+    return this.taskService.uploadTaskImage(file.filename, id);
   }
 }
